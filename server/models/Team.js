@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -12,6 +12,4 @@ const teamSchema = new mongoose.Schema({
   players: [playerSchema],
 });
 
-const Team = mongoose.model('Team', teamSchema);
-
-export default Team;
+module.exports = mongoose.model('Team', teamSchema);

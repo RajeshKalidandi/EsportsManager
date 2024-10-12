@@ -1,13 +1,13 @@
 export interface Player {
-  id: string;
+  _id: string;
   name: string;
   position: string;
   jerseyNumber: string;
 }
 
 export interface Team {
-  id: string;
+  _id: string;
   name: string;
-  createdAt: number;
+  createdAt: Date;
   players?: Player[];
 }

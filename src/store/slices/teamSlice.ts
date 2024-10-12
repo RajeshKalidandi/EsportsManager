@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Team, Player } from '../../types/team';
 
 // Update this line to point to your actual API endpoint
-const API_URL = 'http://localhost:YOUR_CORRECT_PORT/api/teams'; // or whatever your actual API URL is
+const API_URL = 'http://localhost:5000/api/teams';
 
 interface TeamState {
   teams: Team[];
@@ -19,22 +19,17 @@ const initialState: TeamState = {
 
 // Async thunks for API calls
 export const fetchTeams = createAsyncThunk('team/fetchTeams', async () => {
-  // Simulating API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { _id: '1', name: 'Team 1', players: [] },
-    { _id: '2', name: 'Team 2', players: [] },
-    // Add more mock teams as needed
-  ];
+  const response = await axios.get<Team[]>(API_URL);
+  return response.data;
 });
 
 export const createTeam = createAsyncThunk('team/createTeam', async (team: Omit<Team, '_id'>) => {
-  const response = await axios.post(API_URL, team);
+  const response = await axios.post<Team>(API_URL, team);
   return response.data;
 });
 
 export const updateTeam = createAsyncThunk('team/updateTeam', async (team: Team) => {
-  const response = await axios.put(`${API_URL}/${team._id}`, team);
+  const response = await axios.put<Team>(`${API_URL}/${team._id}`, team);
   return response.data;
 });
 
@@ -46,7 +41,7 @@ export const deleteTeam = createAsyncThunk('team/deleteTeam', async (id: string)
 export const addPlayerAsync = createAsyncThunk(
   'team/addPlayer',
   async ({ teamId, player }: { teamId: string; player: Omit<Player, '_id'> }) => {
-    const response = await axios.post(`${API_URL}/${teamId}/players`, player);
+    const response = await axios.post<Player>(`${API_URL}/${teamId}/players`, player);
     return { teamId, player: response.data };
   }
 );
@@ -54,7 +49,7 @@ export const addPlayerAsync = createAsyncThunk(
 export const updatePlayerAsync = createAsyncThunk(
   'team/updatePlayer',
   async ({ teamId, player }: { teamId: string; player: Player }) => {
-    const response = await axios.put(`${API_URL}/${teamId}/players/${player._id}`, player);
+    const response = await axios.put<Player>(`${API_URL}/${teamId}/players/${player._id}`, player);
     return { teamId, player: response.data };
   }
 );
