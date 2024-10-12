@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDl4lKXK0jghCbDhyOAHA0mCSQyPiV9y-0",
-  authDomain: "esportsmanager-ded65.firebaseapp.com",
-  projectId: "esportsmanager-ded65",
-  storageBucket: "esportsmanager-ded65.appspot.com",
-  messagingSenderId: "35696086940",
-  appId: "1:35696086940:web:91aec7749c17b58b00c259",
-  measurementId: "G-84BC5M82RC"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

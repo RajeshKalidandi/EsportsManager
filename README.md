@@ -162,6 +162,16 @@ src/
 ## Target Market
 Growing esports industry seeking professional management and analytics solutions.
 
+## Environment Setup
+
+This project uses environment variables to manage sensitive information. To set up your local environment:
+
+1. Copy the `.env.example` file to a new file named `.env` in the root directory.
+2. Replace the placeholder values in `.env` with your actual Firebase configuration.
+3. Never commit your `.env` file to the repository.
+
+For deployment, ensure you set up these environment variables in your hosting platform.
+
 ---
 
 This README will be updated regularly to reflect the current progress of the project.
