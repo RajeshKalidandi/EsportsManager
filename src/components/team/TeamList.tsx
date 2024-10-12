@@ -1,15 +1,21 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { Team } from '../../types/team';
 import TeamCard from './TeamCard';
 
-const TeamList: React.FC = () => {
-  const teams = useSelector((state: RootState) => state.team.teams);
+interface TeamListProps {
+  teams: Team[] | null;
+  onDeleteTeam: (id: string) => void;
+}
+
+const TeamList: React.FC<TeamListProps> = ({ teams, onDeleteTeam }) => {
+  if (!teams || teams.length === 0) {
+    return <div>No teams available</div>;
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {teams.map((team) => (
-        <TeamCard key={team.id} team={team} />
+        <TeamCard key={team._id} team={team} onDelete={onDeleteTeam} />
       ))}
     </div>
   );

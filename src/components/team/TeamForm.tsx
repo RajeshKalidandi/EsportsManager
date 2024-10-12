@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTeam, updateTeam } from '../../store/slices/teamSlice';
+import { createTeam, updateTeam } from '../../store/slices/teamSlice';
 import Input from '../common/Input';
 import Button from '../common/Button';
 
 interface TeamFormProps {
   team?: {
-    id: string;
+    _id: string;
     name: string;
   };
   onSubmit: () => void;
@@ -21,7 +21,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team, onSubmit }) => {
     if (team) {
       dispatch(updateTeam({ ...team, name }));
     } else {
-      dispatch(addTeam({ id: Date.now().toString(), name }));
+      dispatch(createTeam({ name }));
     }
     onSubmit();
   };
@@ -34,7 +34,7 @@ const TeamForm: React.FC<TeamFormProps> = ({ team, onSubmit }) => {
         onChange={(e) => setName(e.target.value)}
         required
       />
-      <Button type="submit">{team ? 'Update Team' : 'Add Team'}</Button>
+      <Button type="submit">{team ? 'Update Team' : 'Create Team'}</Button>
     </form>
   );
 };

@@ -15,9 +15,13 @@ Our SaaS Esports Management Platform will offer the following core features:
 7. API Integrations
 8. User Management and Security
 
-## Tech Stack
+## Tech Stack (Updated)
 
-We've chosen the following tech stack based on open-source and free-tier options:
+### Backend
+- **Runtime**: Node.js with Express.js
+- **Database**: MongoDB Atlas (free tier)
+- **Authentication**: Firebase Authentication (free tier)
+- **ORM**: Mongoose for MongoDB
 
 ### Frontend (Current Focus)
 - **Framework**: React 18 with TypeScript
@@ -33,14 +37,6 @@ We've chosen the following tech stack based on open-source and free-tier options
 - **Linting**: ESLint
 - **Code Formatting**: Prettier
 
-### Backend (Future Development)
-- **Runtime**: Node.js with Express.js
-- **Database**: Firebase Firestore
-- **Authentication**: Firebase Authentication
-- **Real-time Features**: Firebase Realtime Database (if needed)
-- **API Development**: GraphQL with Apollo Server (planned)
-- **ORM**: Not needed with Firestore
-
 ### DevOps and Deployment
 - **CI/CD**: GitHub Actions
 - **Hosting**: Firebase Hosting
@@ -51,7 +47,7 @@ We've chosen the following tech stack based on open-source and free-tier options
 - Twitch API for streaming integration
 - Steam API for game data
 
-## Frontend Development Progress
+## Frontend Development Progress (Updated)
 
 ### Step 1: Project Setup and Initial Planning
 - [x] Set up React with TypeScript project using Vite
@@ -99,11 +95,11 @@ We've chosen the following tech stack based on open-source and free-tier options
 - [ ] Design player profile component
 - [x] Create forms for adding/editing team information
 
-### Step 7: Firebase Integration
-- [x] Set up Firebase project
-- [x] Implement Firebase Authentication
-- [x] Set up Firestore database
-- [x] Integrate Firebase with Redux for state management
+### Step 7: MongoDB Integration
+- [x] Set up MongoDB Atlas cluster
+- [x] Implement Mongoose for database operations
+- [x] Update team slice to use MongoDB operations
+- [x] Create Team model using Mongoose schema
 
 ### Step 8: Enhanced UI and User Experience
 - [x] Implement responsive Navbar component
@@ -113,20 +109,44 @@ We've chosen the following tech stack based on open-source and free-tier options
 - [x] Add data visualization to Analytics page using Recharts
 
 ### Step 9: Landing Page and Public Pages
-- [x] Design and implement an engaging Landing Page
+- [x] Design and implement an engaging Landing Page with animations
 - [x] Create About Us page
 - [x] Implement Contact Us page
 - [x] Add Privacy Policy and Terms of Service pages
 
+### Step 10: Player Management
+- [x] Implement player management within teams
+- [x] Create PlayerForm component for adding/editing player information
+- [x] Add PlayerList component to display players within a team
+- [x] Update TeamDetails page to include player management functionality
+
+### Step 11: MongoDB Integration and Enhanced Authentication
+- [x] Integrate MongoDB Atlas for database operations
+- [x] Update Redux slices to work with MongoDB
+- [x] Enhance authentication flow with Firebase
+- [x] Implement protected routes for authenticated users
+
+### Step 12: UI/UX Improvements
+- [x] Add animations to Landing Page using Framer Motion
+- [x] Implement responsive design for all pages
+- [x] Create reusable components for common UI elements
+- [x] Enhance form validation and error handling
+
+### Step 13: Additional Features
+- [x] Implement user profile management
+- [x] Add team and player management functionality
+- [x] Create settings page for user preferences
+- [x] Implement forgot password functionality
+
 ### Next Steps
-- Implement player management within teams
 - Develop tournament organization module
 - Enhance analytics and reporting features
-- Implement error handling and loading states
-- Add more animations and transitions for better UX
-- Implement comprehensive testing
-- Optimize performance with code splitting and lazy loading
-- Prepare for deployment with proper logging and monitoring
+- Implement real-time updates using WebSockets
+- Add more advanced team management features
+- Integrate with external APIs (Discord, Twitch, Steam)
+- Implement comprehensive testing suite
+- Optimize performance and implement code splitting
+- Prepare for production deployment
 
 ## Frontend Project Structure
 
@@ -178,12 +198,12 @@ src/
 ## Target Market
 Growing esports industry seeking professional management and analytics solutions.
 
-## Environment Setup
+## Environment Setup (Updated)
 
 This project uses environment variables to manage sensitive information. To set up your local environment:
 
 1. Copy the `.env.example` file to a new file named `.env` in the root directory.
-2. Replace the placeholder values in `.env` with your actual Firebase configuration.
+2. Replace the placeholder values in `.env` with your actual Firebase and MongoDB Atlas configuration.
 3. Never commit your `.env` file to the repository.
 
 For deployment, ensure you set up these environment variables in your hosting platform.

@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import App from './App';
+import connectDB from './db/mongoose';
+
+// Connect to MongoDB
+connectDB();
 
 ReactDOM.render(
   <React.StrictMode>

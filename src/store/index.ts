@@ -9,5 +9,15 @@ export const store = configureStore({
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export interface RootState {
+  team: {
+    teams: Team[] | null;
+    loading: boolean;
+    error: string | null;
+  };
+  auth: {
+    // ... auth state
+  };
+}
+
 export type AppDispatch = typeof store.dispatch;
