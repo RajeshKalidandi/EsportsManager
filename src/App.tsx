@@ -1,50 +1,56 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from './store';
+import Navbar from './components/layout/Navbar';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import TeamManagement from './pages/TeamManagement';
 import TeamDetails from './pages/TeamDetails';
 import TournamentOrganization from './pages/TournamentOrganization';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import ContactUs from './pages/ContactUs';
+import AboutUs from './pages/AboutUs';
 
-const PrivateRoute: React.FC<{ component: React.ComponentType<any>; path: string; exact?: boolean }> = ({
-  component: Component,
-  ...rest
-}) => {
+const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        isAuthenticated ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
-        )
-      }
-    />
+  return isAuthenticated ? (
+    <>
+      <Navbar />
+      {children}
+    </>
+  ) : (
+    <Navigate to="/login" replace />
   );
 };
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route path="/forgot-password" component={ForgotPassword} />
-        <PrivateRoute exact path="/" component={Dashboard} />
-        <PrivateRoute path="/teams" component={TeamManagement} />
-        <PrivateRoute path="/team/:id" component={TeamDetails} />
-        <PrivateRoute path="/tournaments" component={TournamentOrganization} />
-        <PrivateRoute path="/analytics" component={Analytics} />
-        <PrivateRoute path="/settings" component={Settings} />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/teams" element={<PrivateRoute><TeamManagement /></PrivateRoute>} />
+        <Route path="/team/:id" element={<PrivateRoute><TeamDetails /></PrivateRoute>} />
+        <Route path="/tournaments" element={<PrivateRoute><TournamentOrganization /></PrivateRoute>} />
+        <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+      </Routes>
     </Router>
   );
 };
