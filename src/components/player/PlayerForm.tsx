@@ -1,58 +1,129 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addPlayer, updatePlayer } from '../../store/slices/teamSlice';
-import Input from '../common/Input';
+import { addPlayer } from '../../store/slices/playerSlice';
 import Button from '../common/Button';
+import Input from '../common/Input';
 
-interface PlayerFormProps {
-  teamId: string;
-  player?: {
-    id: string;
-    name: string;
-    position: string;
-    jerseyNumber: string;
-  };
-  onSubmit: () => void;
-}
-
-const PlayerForm: React.FC<PlayerFormProps> = ({ teamId, player, onSubmit }) => {
-  const [name, setName] = useState(player?.name || '');
-  const [position, setPosition] = useState(player?.position || '');
-  const [jerseyNumber, setJerseyNumber] = useState(player?.jerseyNumber || '');
+const PlayerForm: React.FC = () => {
   const dispatch = useDispatch();
+  const [playerData, setPlayerData] = useState({
+    name: '',
+    age: '',
+    position: '',
+    statistics: {
+      gamesPlayed: 0,
+      kills: 0,
+      deaths: 0,
+      assists: 0,
+      averageDamagePerRound: 0,
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setPlayerData(prevState => ({
+        ...prevState,
+        [parent]: {
+          ...prevState[parent],
+          [child]: Number(value)
+        }
+      }));
+    } else {
+      setPlayerData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
+  };
+
+  const calculatePerformanceRating = (stats) => {
+    const kda = stats.deaths > 0 ? (stats.kills + stats.assists) / stats.deaths : stats.kills + stats.assists;
+    return (kda * 0.4 + stats.averageDamagePerRound * 0.6).toFixed(2);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const playerData = { name, position, jerseyNumber };
-    if (player) {
-      dispatch(updatePlayer({ teamId, playerId: player.id, ...playerData }));
-    } else {
-      dispatch(addPlayer({ teamId, player: { id: Date.now().toString(), ...playerData } }));
-    }
-    onSubmit();
+    const performanceRating = calculatePerformanceRating(playerData.statistics);
+    dispatch(addPlayer({ ...playerData, performanceRating: Number(performanceRating) }));
+    setPlayerData({
+      name: '',
+      age: '',
+      position: '',
+      statistics: {
+        gamesPlayed: 0,
+        kills: 0,
+        deaths: 0,
+        assists: 0,
+        averageDamagePerRound: 0,
+      },
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label="Player Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        type="text"
+        name="name"
+        value={playerData.name}
+        onChange={handleChange}
+        placeholder="Player Name"
         required
       />
       <Input
-        label="Position"
-        value={position}
-        onChange={(e) => setPosition(e.target.value)}
+        type="number"
+        name="age"
+        value={playerData.age}
+        onChange={handleChange}
+        placeholder="Age"
         required
       />
       <Input
-        label="Jersey Number"
-        value={jerseyNumber}
-        onChange={(e) => setJerseyNumber(e.target.value)}
+        type="text"
+        name="position"
+        value={playerData.position}
+        onChange={handleChange}
+        placeholder="Position"
         required
       />
-      <Button type="submit">{player ? 'Update Player' : 'Add Player'}</Button>
+      <h3 className="text-lg font-semibold">Statistics</h3>
+      <Input
+        type="number"
+        name="statistics.gamesPlayed"
+        value={playerData.statistics.gamesPlayed}
+        onChange={handleChange}
+        placeholder="Games Played"
+      />
+      <Input
+        type="number"
+        name="statistics.kills"
+        value={playerData.statistics.kills}
+        onChange={handleChange}
+        placeholder="Kills"
+      />
+      <Input
+        type="number"
+        name="statistics.deaths"
+        value={playerData.statistics.deaths}
+        onChange={handleChange}
+        placeholder="Deaths"
+      />
+      <Input
+        type="number"
+        name="statistics.assists"
+        value={playerData.statistics.assists}
+        onChange={handleChange}
+        placeholder="Assists"
+      />
+      <Input
+        type="number"
+        name="statistics.averageDamagePerRound"
+        value={playerData.statistics.averageDamagePerRound}
+        onChange={handleChange}
+        placeholder="Average Damage Per Round"
+      />
+      <Button type="submit">Add Player</Button>
     </form>
   );
 };

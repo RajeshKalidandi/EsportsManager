@@ -1,11 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { teamReducer } from './slices/teamSlice';
 import { authReducer } from './slices/authSlice';
+import tournamentReducer from './slices/tournamentSlice';
+import playerReducer from './slices/playerSlice';
 
 export const store = configureStore({
   reducer: {
     team: teamReducer,
     auth: authReducer,
+    tournaments: tournamentReducer,
+    players: playerReducer,
   },
 });
 
@@ -17,6 +21,14 @@ export interface RootState {
   };
   auth: {
     // ... auth state
+  };
+  tournaments: {
+    // ... tournament state
+  };
+  players: {
+    players: Player[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
   };
 }
 

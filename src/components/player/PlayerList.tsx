@@ -1,45 +1,46 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { deletePlayer } from '../../store/slices/teamSlice';
-import { Player } from '../../types/team';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchPlayers, deletePlayer } from '../../store/slices/playerSlice';
+import { RootState } from '../../store';
 import Button from '../common/Button';
+import Table from '../common/Table';
 
-interface PlayerListProps {
-  teamId: string;
-  players: Player[];
-  onEditPlayer: (player: Player) => void;
-}
-
-const PlayerList: React.FC<PlayerListProps> = ({ teamId, players, onEditPlayer }) => {
+const PlayerList: React.FC = () => {
   const dispatch = useDispatch();
+  const players = useSelector((state: RootState) => state.players.players);
 
-  const handleDeletePlayer = (playerId: string) => {
-    if (window.confirm('Are you sure you want to delete this player?')) {
-      dispatch(deletePlayer({ teamId, playerId }));
-    }
+  useEffect(() => {
+    dispatch(fetchPlayers());
+  }, [dispatch]);
+
+  const handleDelete = (id: string) => {
+    dispatch(deletePlayer(id));
   };
 
+  const columns = [
+    { header: 'Name', accessor: 'name' },
+    { header: 'Age', accessor: 'age' },
+    { header: 'Position', accessor: 'position' },
+    { header: 'Games Played', accessor: 'statistics.gamesPlayed' },
+    { header: 'Kills', accessor: 'statistics.kills' },
+    { header: 'Deaths', accessor: 'statistics.deaths' },
+    { header: 'Assists', accessor: 'statistics.assists' },
+    { header: 'KDA', accessor: 'statistics.kda' },
+    { header: 'Avg Damage/Round', accessor: 'statistics.averageDamagePerRound' },
+    { header: 'Performance Rating', accessor: 'performanceRating' },
+    {
+      header: 'Actions',
+      accessor: 'actions',
+      Cell: ({ row }: { row: any }) => (
+        <Button onClick={() => handleDelete(row.original._id)}>Delete</Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold">Players</h3>
-      {players.length === 0 ? (
-        <p>No players in this team yet.</p>
-      ) : (
-        <ul className="divide-y divide-gray-200">
-          {players.map((player) => (
-            <li key={player.id} className="py-4 flex justify-between items-center">
-              <div>
-                <p className="font-medium">{player.name}</p>
-                <p className="text-sm text-gray-500">{player.position} - #{player.jerseyNumber}</p>
-              </div>
-              <div className="space-x-2">
-                <Button onClick={() => onEditPlayer(player)}>Edit</Button>
-                <Button onClick={() => handleDeletePlayer(player.id)}>Delete</Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Players</h2>
+      <Table columns={columns} data={players} />
     </div>
   );
 };
