@@ -7,13 +7,15 @@ const API_URL = 'http://localhost:5000/api/teams';
 
 interface TeamState {
   teams: Team[];
-  loading: boolean;
+  currentTeam: Team | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 const initialState: TeamState = {
   teams: [],
-  loading: false,
+  currentTeam: null,
+  status: 'idle',
   error: null,
 };
 
@@ -62,6 +64,22 @@ export const deletePlayerAsync = createAsyncThunk(
   }
 );
 
+export const fetchTeamDetails = createAsyncThunk(
+  'teams/fetchTeamDetails',
+  async (teamId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/${teamId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message)
+      } else {
+        return rejectWithValue('An error occurred while fetching team details')
+      }
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: 'team',
   initialState,
@@ -93,14 +111,14 @@ const teamSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchTeams.pending, (state) => {
-        state.loading = true;
+        state.status = 'loading';
       })
       .addCase(fetchTeams.fulfilled, (state, action: PayloadAction<Team[]>) => {
-        state.loading = false;
+        state.status = 'succeeded';
         state.teams = action.payload;
       })
       .addCase(fetchTeams.rejected, (state, action) => {
-        state.loading = false;
+        state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch teams';
       })
       .addCase(createTeam.fulfilled, (state, action: PayloadAction<Team>) => {
@@ -139,6 +157,17 @@ const teamSlice = createSlice({
         if (team && team.players) {
           team.players = team.players.filter(p => p._id !== playerId);
         }
+      })
+      .addCase(fetchTeamDetails.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchTeamDetails.fulfilled, (state, action: PayloadAction<Team>) => {
+        state.status = 'succeeded';
+        state.currentTeam = action.payload;
+      })
+      .addCase(fetchTeamDetails.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || null;
       });
   },
 });

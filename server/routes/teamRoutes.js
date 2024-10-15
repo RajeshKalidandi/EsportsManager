@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Team = require('../models/Team');
+const mongoose = require('mongoose');
+const Team = mongoose.model('Team');
+const Player = mongoose.model('Player');
 
 // Get all teams
 router.get('/', async (req, res) => {
@@ -28,5 +30,23 @@ router.post('/', async (req, res) => {
 });
 
 // Add more routes for updating and deleting teams
+
+// GET a single team by ID
+router.get('/:id', async (req, res) => {
+  console.log(`Attempting to fetch team with ID: ${req.params.id}`);
+  try {
+    const team = await Team.findById(req.params.id).populate('players');
+    if (!team) {
+      console.log(`Team not found with ID: ${req.params.id}`);
+      return res.status(404).json({ message: 'Team not found' });
+    }
+    console.log(`Team found: ${team.name}`);
+    res.json(team);
+  } catch (err) {
+    console.error(`Error fetching team: ${err.message}`);
+    console.error(err.stack);
+    res.status(500).json({ message: err.message, stack: err.stack });
+  }
+});
 
 module.exports = router;

@@ -1,35 +1,40 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTeams, createTeam, deleteTeam } from '../store/slices/teamSlice';
-import { RootState } from '../store';
+import React, { useState } from 'react';
 import TeamList from '../components/team/TeamList';
 import TeamForm from '../components/team/TeamForm';
+import Button from '../components/common/Button';
+import { motion } from 'framer-motion';
 
-const TeamManagement: React.FC = () => {
-  const dispatch = useDispatch();
-  const { teams, loading, error } = useSelector((state: RootState) => state.team);
-
-  useEffect(() => {
-    dispatch(fetchTeams());
-  }, [dispatch]);
-
-  const handleCreateTeam = (team: { name: string }) => {
-    dispatch(createTeam(team));
-  };
-
-  const handleDeleteTeam = (id: string) => {
-    dispatch(deleteTeam(id));
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+const TeamManagement = () => {
+  const [showForm, setShowForm] = useState(false);
 
   return (
-    <div>
-      <h1>Team Management</h1>
-      <TeamForm onSubmit={handleCreateTeam} />
-      <TeamList teams={teams} onDeleteTeam={handleDeleteTeam} />
-    </div>
+    <motion.div 
+      className="container mx-auto px-4 py-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">Team Management</h1>
+      <div className="mb-8 flex justify-end">
+        <Button 
+          onClick={() => setShowForm(!showForm)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          {showForm ? 'Hide Form' : 'Create Team'}
+        </Button>
+      </div>
+      {showForm && (
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <TeamForm onSubmit={() => setShowForm(false)} />
+        </motion.div>
+      )}
+      <TeamList />
+    </motion.div>
   );
 };
 

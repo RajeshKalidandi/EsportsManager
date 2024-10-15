@@ -1,15 +1,10 @@
 const mongoose = require('mongoose');
 
-const playerSchema = new mongoose.Schema({
+const TeamSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  position: { type: String, required: true },
-  jerseyNumber: { type: String, required: true },
-});
+  description: { type: String },
+  players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],
+  // Add other fields as needed
+}, { timestamps: true });
 
-const teamSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  players: [playerSchema],
-});
-
-module.exports = mongoose.model('Team', teamSchema);
+module.exports = mongoose.model('Team', TeamSchema);

@@ -1,25 +1,26 @@
-import React, { ButtonHTMLAttributes } from 'react';
-import { motion } from 'framer-motion';
+import React, { ReactNode } from 'react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  fullWidth?: boolean;
-  whileHover?: object;
-  whileTap?: object;
+interface ButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  className?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, fullWidth, className, whileHover, whileTap, ...props }) => {
-  const baseClasses = "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50";
-  const widthClass = fullWidth ? "w-full" : "";
-  
+export const Button: React.FC<ButtonProps> = ({ 
+  children, 
+  onClick, 
+  type = 'button', 
+  className = '' 
+}) => {
   return (
-    <motion.button
-      className={`${baseClasses} ${widthClass} ${className || ''}`}
-      whileHover={whileHover}
-      whileTap={whileTap}
-      {...props}
+    <button
+      type={type}
+      onClick={onClick}
+      className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${className}`}
     >
       {children}
-    </motion.button>
+    </button>
   );
 };
 

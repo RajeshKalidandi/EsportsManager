@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../../services/api';
 
 interface Tournament {
   id: string;
@@ -8,15 +9,31 @@ interface Tournament {
 
 interface TournamentState {
   tournaments: Tournament[];
-  loading: boolean;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 const initialState: TournamentState = {
   tournaments: [],
-  loading: false,
+  status: 'idle',
   error: null,
 };
+
+export const fetchTournaments = createAsyncThunk(
+  'tournaments/fetchTournaments',
+  async () => {
+    const response = await api.get('/api/tournaments');
+    return response.data;
+  }
+);
+
+export const createTournament = createAsyncThunk(
+  'tournaments/createTournament',
+  async (tournamentData) => {
+    const response = await api.post('/api/tournaments', tournamentData);
+    return response.data;
+  }
+);
 
 const tournamentSlice = createSlice({
   name: 'tournament',
@@ -43,6 +60,23 @@ const tournamentSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTournaments.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchTournaments.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.tournaments = action.payload;
+      })
+      .addCase(fetchTournaments.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(createTournament.fulfilled, (state, action) => {
+        state.tournaments.push(action.payload);
+      });
   },
 });
 
