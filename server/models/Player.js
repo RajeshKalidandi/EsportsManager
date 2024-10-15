@@ -27,6 +27,10 @@ const PlayerSchema = new mongoose.Schema({
     averageDamagePerRound: { type: Number, default: 0 },
   },
   performanceRating: { type: Number, default: 0 },
+  performanceHistory: [{
+    date: { type: Date, default: Date.now },
+    performanceRating: Number
+  }]
 }, {
   timestamps: true
 });

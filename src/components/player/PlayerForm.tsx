@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addPlayer } from '../../store/slices/playerSlice';
+import { fetchTeams } from '../../store/slices/teamSlice';
+import { RootState } from '../../store';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import Dropdown from '../common/Dropdown';
 
 const PlayerForm: React.FC = () => {
   const dispatch = useDispatch();
+  const teams = useSelector((state: RootState) => state.team.teams);
+
+  useEffect(() => {
+    dispatch(fetchTeams());
+  }, [dispatch]);
+
   const [playerData, setPlayerData] = useState({
     name: '',
     age: '',
     position: '',
+    team: '',
     statistics: {
       gamesPlayed: 0,
       kills: 0,
@@ -51,6 +61,7 @@ const PlayerForm: React.FC = () => {
       name: '',
       age: '',
       position: '',
+      team: '',
       statistics: {
         gamesPlayed: 0,
         kills: 0,
@@ -86,6 +97,13 @@ const PlayerForm: React.FC = () => {
         onChange={handleChange}
         placeholder="Position"
         required
+      />
+      <Dropdown
+        name="team"
+        value={playerData.team}
+        onChange={handleChange}
+        options={teams.map(team => ({ value: team._id, label: team.name }))}
+        placeholder="Select Team"
       />
       <h3 className="text-lg font-semibold">Statistics</h3>
       <Input

@@ -1,36 +1,60 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { PlayerForm, PlayerList, PlayerStats } from '../components/player';
-import { RootState } from '../store';
-import { Button } from '../components/common';
+import PlayerForm from '../components/player/PlayerForm';
+import PlayerList from '../components/player/PlayerList';
+import PlayerStats from '../components/player/PlayerStats';
+import PlayerComparison from '../components/player/PlayerComparison';
+import PlayerSearch from '../components/player/PlayerSearch';
+import { Tab } from '@headlessui/react';
 
 const PlayerManagement: React.FC = () => {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
-  const players = useSelector((state: RootState) => state.players.players);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Player Management</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Add New Player</h2>
-          <PlayerForm />
-        </div>
-        <div>
-          <PlayerList />
-        </div>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Player Statistics</h2>
-        <div className="flex flex-wrap gap-4 mb-4">
-          {players.map(player => (
-            <Button key={player._id} onClick={() => setSelectedPlayerId(player._id)}>
-              {player.name}
-            </Button>
-          ))}
-        </div>
-        {selectedPlayerId && <PlayerStats playerId={selectedPlayerId} />}
-      </div>
+      <Tab.Group>
+        <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 mb-4">
+          <Tab className={({ selected }) =>
+            `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+            ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+          }>
+            Player List
+          </Tab>
+          <Tab className={({ selected }) =>
+            `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+            ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+          }>
+            Add Player
+          </Tab>
+          <Tab className={({ selected }) =>
+            `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+            ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+          }>
+            Player Comparison
+          </Tab>
+          <Tab className={({ selected }) =>
+            `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+            ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+          }>
+            Player Search
+          </Tab>
+        </Tab.List>
+        <Tab.Panels>
+          <Tab.Panel>
+            <PlayerList />
+          </Tab.Panel>
+          <Tab.Panel>
+            <PlayerForm />
+          </Tab.Panel>
+          <Tab.Panel>
+            <PlayerComparison />
+          </Tab.Panel>
+          <Tab.Panel>
+            <PlayerSearch onPlayerSelect={setSelectedPlayerId} />
+            {selectedPlayerId && <PlayerStats playerId={selectedPlayerId} />}
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
     </div>
   );
 };

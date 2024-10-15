@@ -51,6 +51,14 @@ export const deletePlayer = createAsyncThunk('players/deletePlayer', async (id: 
   return id;
 });
 
+export const updatePlayerStats = createAsyncThunk(
+  'players/updatePlayerStats',
+  async (updatedPlayer: Player) => {
+    // You might want to make an API call here to persist the changes
+    return updatedPlayer;
+  }
+);
+
 const playerSlice = createSlice({
   name: 'players',
   initialState,
@@ -79,6 +87,12 @@ const playerSlice = createSlice({
       })
       .addCase(deletePlayer.fulfilled, (state, action: PayloadAction<string>) => {
         state.players = state.players.filter(player => player._id !== action.payload);
+      })
+      .addCase(updatePlayerStats.fulfilled, (state, action) => {
+        const index = state.players.findIndex(player => player._id === action.payload._id);
+        if (index !== -1) {
+          state.players[index] = action.payload;
+        }
       });
   },
 });

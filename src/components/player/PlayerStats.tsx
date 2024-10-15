@@ -1,7 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Card } from '../common';
+import Card from '../common/Card';
+import PlayerStatsChart from './PlayerStatsChart';
 
 interface PlayerStatsProps {
   playerId: string;
@@ -17,7 +18,7 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({ playerId }) => {
   return (
     <Card>
       <h2 className="text-2xl font-bold mb-4">{player.name} Statistics</h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <p><strong>Games Played:</strong> {player.statistics.gamesPlayed}</p>
           <p><strong>Kills:</strong> {player.statistics.kills}</p>
@@ -30,6 +31,7 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({ playerId }) => {
           <p><strong>Performance Rating:</strong> {player.performanceRating.toFixed(2)}</p>
         </div>
       </div>
+      <PlayerStatsChart player={player} />
     </Card>
   );
 };

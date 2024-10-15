@@ -29,7 +29,12 @@ export interface RootState {
     players: Player[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    performanceHistory: {
+      date: Date;
+      performanceRating: Number;
+    }[];
   };
 }
 
 export type AppDispatch = typeof store.dispatch;
+

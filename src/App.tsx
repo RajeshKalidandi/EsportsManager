@@ -18,6 +18,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import ContactUs from './pages/ContactUs';
 import AboutUs from './pages/AboutUs';
+import PlayerManagement from './pages/PlayerManagement';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -35,7 +36,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -50,6 +51,8 @@ const App: React.FC = () => {
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+        <Route path="/player-management" element={<PlayerManagement />} />
+        <Route path="/team-management" element={<TeamManagement />} />
       </Routes>
     </Router>
   );

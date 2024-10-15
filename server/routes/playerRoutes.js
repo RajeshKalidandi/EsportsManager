@@ -12,7 +12,9 @@ const calculatePerformanceRating = (stats) => {
 router.post('/', async (req, res) => {
   try {
     const playerData = req.body;
-    playerData.performanceRating = calculatePerformanceRating(playerData.statistics);
+    const performanceRating = calculatePerformanceRating(playerData.statistics);
+    playerData.performanceRating = performanceRating;
+    playerData.performanceHistory = [{ performanceRating }];
     const player = new Player(playerData);
     await player.save();
     res.status(201).send(player);
@@ -24,7 +26,7 @@ router.post('/', async (req, res) => {
 // Get all players
 router.get('/', async (req, res) => {
   try {
-    const players = await Player.find();
+    const players = await Player.find().populate('team');
     res.send(players);
   } catch (error) {
     res.status(500).send(error);
@@ -34,7 +36,7 @@ router.get('/', async (req, res) => {
 // Get a specific player
 router.get('/:id', async (req, res) => {
   try {
-    const player = await Player.findById(req.params.id);
+    const player = await Player.findById(req.params.id).populate('team');
     if (!player) {
       return res.status(404).send();
     }
@@ -49,7 +51,11 @@ router.patch('/:id', async (req, res) => {
   try {
     const updates = req.body;
     if (updates.statistics) {
-      updates.performanceRating = calculatePerformanceRating(updates.statistics);
+      const performanceRating = calculatePerformanceRating(updates.statistics);
+      updates.performanceRating = performanceRating;
+      updates.$push = {
+        performanceHistory: { performanceRating }
+      };
     }
     const player = await Player.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
     if (!player) {
@@ -69,6 +75,19 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).send();
     }
     res.send(player);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+// Get player performance history
+router.get('/:id/performance-history', async (req, res) => {
+  try {
+    const player = await Player.findById(req.params.id);
+    if (!player) {
+      return res.status(404).send();
+    }
+    res.send(player.performanceHistory);
   } catch (error) {
     res.status(500).send(error);
   }
