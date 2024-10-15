@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../services/api';
 import { Team, Player } from '../../types/team';
-
-// Update this line to point to your actual API endpoint
-const API_URL = 'http://localhost:5000/api/teams';
 
 interface TeamState {
   teams: Team[];
@@ -19,31 +16,42 @@ const initialState: TeamState = {
   error: null,
 };
 
-// Async thunks for API calls
 export const fetchTeams = createAsyncThunk('team/fetchTeams', async () => {
-  const response = await axios.get<Team[]>(API_URL);
+  const response = await api.get<Team[]>('/api/teams');
   return response.data;
 });
 
 export const createTeam = createAsyncThunk('team/createTeam', async (team: Omit<Team, '_id'>) => {
-  const response = await axios.post<Team>(API_URL, team);
+  const response = await api.post<Team>('/api/teams', team);
   return response.data;
 });
 
 export const updateTeam = createAsyncThunk('team/updateTeam', async (team: Team) => {
-  const response = await axios.put<Team>(`${API_URL}/${team._id}`, team);
+  const response = await api.put<Team>(`/api/teams/${team._id}`, team);
   return response.data;
 });
 
 export const deleteTeam = createAsyncThunk('team/deleteTeam', async (id: string) => {
-  await axios.delete(`${API_URL}/${id}`);
+  await api.delete(`/api/teams/${id}`);
   return id;
 });
+
+export const fetchTeamDetails = createAsyncThunk(
+  'teams/fetchTeamDetails',
+  async (teamId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/teams/${teamId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch team details');
+    }
+  }
+);
 
 export const addPlayerAsync = createAsyncThunk(
   'team/addPlayer',
   async ({ teamId, player }: { teamId: string; player: Omit<Player, '_id'> }) => {
-    const response = await axios.post<Player>(`${API_URL}/${teamId}/players`, player);
+    const response = await api.post<Player>(`/api/teams/${teamId}/players`, player);
     return { teamId, player: response.data };
   }
 );
@@ -51,7 +59,7 @@ export const addPlayerAsync = createAsyncThunk(
 export const updatePlayerAsync = createAsyncThunk(
   'team/updatePlayer',
   async ({ teamId, player }: { teamId: string; player: Player }) => {
-    const response = await axios.put<Player>(`${API_URL}/${teamId}/players/${player._id}`, player);
+    const response = await api.put<Player>(`/api/teams/${teamId}/players/${player._id}`, player);
     return { teamId, player: response.data };
   }
 );
@@ -59,55 +67,15 @@ export const updatePlayerAsync = createAsyncThunk(
 export const deletePlayerAsync = createAsyncThunk(
   'team/deletePlayer',
   async ({ teamId, playerId }: { teamId: string; playerId: string }) => {
-    await axios.delete(`${API_URL}/${teamId}/players/${playerId}`);
+    await api.delete(`/api/teams/${teamId}/players/${playerId}`);
     return { teamId, playerId };
-  }
-);
-
-export const fetchTeamDetails = createAsyncThunk(
-  'teams/fetchTeamDetails',
-  async (teamId: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_URL}/${teamId}`);
-      return response.data;
-    } catch (error) {
-      if (error.response && error.response.data.message) {
-        return rejectWithValue(error.response.data.message)
-      } else {
-        return rejectWithValue('An error occurred while fetching team details')
-      }
-    }
   }
 );
 
 const teamSlice = createSlice({
   name: 'team',
   initialState,
-  reducers: {
-    // These are synchronous actions, different from the async thunks above
-    addPlayer: (state, action: PayloadAction<{ teamId: string; player: Player }>) => {
-      const team = state.teams.find(t => t._id === action.payload.teamId);
-      if (team) {
-        team.players = team.players || [];
-        team.players.push(action.payload.player);
-      }
-    },
-    updatePlayer: (state, action: PayloadAction<{ teamId: string; player: Player }>) => {
-      const team = state.teams.find(t => t._id === action.payload.teamId);
-      if (team && team.players) {
-        const playerIndex = team.players.findIndex(p => p._id === action.payload.player._id);
-        if (playerIndex !== -1) {
-          team.players[playerIndex] = action.payload.player;
-        }
-      }
-    },
-    deletePlayer: (state, action: PayloadAction<{ teamId: string; playerId: string }>) => {
-      const team = state.teams.find(t => t._id === action.payload.teamId);
-      if (team && team.players) {
-        team.players = team.players.filter(p => p._id !== action.payload.playerId);
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTeams.pending, (state) => {
@@ -133,31 +101,6 @@ const teamSlice = createSlice({
       .addCase(deleteTeam.fulfilled, (state, action: PayloadAction<string>) => {
         state.teams = state.teams.filter(team => team._id !== action.payload);
       })
-      .addCase(addPlayerAsync.fulfilled, (state, action) => {
-        const { teamId, player } = action.payload;
-        const team = state.teams.find(t => t._id === teamId);
-        if (team) {
-          team.players = team.players || [];
-          team.players.push(player);
-        }
-      })
-      .addCase(updatePlayerAsync.fulfilled, (state, action) => {
-        const { teamId, player } = action.payload;
-        const team = state.teams.find(t => t._id === teamId);
-        if (team && team.players) {
-          const playerIndex = team.players.findIndex(p => p._id === player._id);
-          if (playerIndex !== -1) {
-            team.players[playerIndex] = player;
-          }
-        }
-      })
-      .addCase(deletePlayerAsync.fulfilled, (state, action) => {
-        const { teamId, playerId } = action.payload;
-        const team = state.teams.find(t => t._id === teamId);
-        if (team && team.players) {
-          team.players = team.players.filter(p => p._id !== playerId);
-        }
-      })
       .addCase(fetchTeamDetails.pending, (state) => {
         state.status = 'loading';
       })
@@ -167,10 +110,30 @@ const teamSlice = createSlice({
       })
       .addCase(fetchTeamDetails.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || null;
+        state.error = action.payload as string;
+      })
+      .addCase(addPlayerAsync.fulfilled, (state, action) => {
+        const team = state.teams.find(t => t._id === action.payload.teamId);
+        if (team) {
+          team.players.push(action.payload.player);
+        }
+      })
+      .addCase(updatePlayerAsync.fulfilled, (state, action) => {
+        const team = state.teams.find(t => t._id === action.payload.teamId);
+        if (team) {
+          const playerIndex = team.players.findIndex(p => p._id === action.payload.player._id);
+          if (playerIndex !== -1) {
+            team.players[playerIndex] = action.payload.player;
+          }
+        }
+      })
+      .addCase(deletePlayerAsync.fulfilled, (state, action) => {
+        const team = state.teams.find(t => t._id === action.payload.teamId);
+        if (team) {
+          team.players = team.players.filter(p => p._id !== action.payload.playerId);
+        }
       });
   },
 });
 
-export const { addPlayer, updatePlayer, deletePlayer } = teamSlice.actions;
 export const teamReducer = teamSlice.reducer;

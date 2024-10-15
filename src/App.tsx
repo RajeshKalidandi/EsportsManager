@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from './store';
@@ -18,6 +19,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import ContactUs from './pages/ContactUs';
 import AboutUs from './pages/AboutUs';
+import { setupSocketListeners } from './services/socket';
+import PlayerStatistics from './components/player/PlayerStatistics';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -32,6 +35,12 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 };
 
 const App: React.FC = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setupSocketListeners(dispatch);
+  }, [dispatch]);
+
   return (
     <Router>
       <Routes>
@@ -50,6 +59,7 @@ const App: React.FC = () => {
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+        <Route path="/player-stats/:playerId/:tournamentId" element={<PrivateRoute><PlayerStatistics /></PrivateRoute>} />
       </Routes>
     </Router>
   );

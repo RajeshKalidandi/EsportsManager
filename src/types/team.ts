@@ -8,5 +8,7 @@ export interface Player {
 export interface Team {
   _id: string;
   name: string;
+  players: Player[];
+  tournaments: string[]; // Array of tournament IDs
   // Add other properties of the Team model here
 }

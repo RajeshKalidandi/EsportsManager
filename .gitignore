@@ -30,3 +30,6 @@ dist-ssr
 .env.test.local
 .env.production.local
 server/.env
+
+# .gitignore
+server/config/firebase-service-account.json

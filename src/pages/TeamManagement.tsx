@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import TeamList from '../components/team/TeamList';
 import TeamForm from '../components/team/TeamForm';
 import Button from '../components/common/Button';
 import { motion } from 'framer-motion';
+import { RootState } from '../store';
 
 const TeamManagement = () => {
   const [showForm, setShowForm] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (!isAuthenticated) {
+    return null; // or a loading spinner
+  }
 
   return (
     <motion.div 
