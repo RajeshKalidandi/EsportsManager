@@ -1,18 +1,19 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { Team, Player } from '../../types/team';
+import { AppThunk } from '..';
 
 interface TeamState {
   teams: Team[];
-  currentTeam: Team | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  filteredTeams: Team[];
+  loading: boolean;
   error: string | null;
 }
 
 const initialState: TeamState = {
   teams: [],
-  currentTeam: null,
-  status: 'idle',
+  filteredTeams: [],
+  loading: false,
   error: null,
 };
 
@@ -73,20 +74,37 @@ export const deletePlayerAsync = createAsyncThunk(
 );
 
 const teamSlice = createSlice({
-  name: 'team',
+  name: 'teams',
   initialState,
-  reducers: {},
+  reducers: {
+    searchTeams: (state, action: PayloadAction<string>) => {
+      const searchTerm = action.payload.toLowerCase();
+      state.filteredTeams = state.teams.filter(team =>
+        team.name.toLowerCase().includes(searchTerm)
+      );
+    },
+    filterTeams: (state, action: PayloadAction<string>) => {
+      const filterOption = action.payload;
+      if (filterOption === 'All') {
+        state.filteredTeams = state.teams;
+      } else {
+        state.filteredTeams = state.teams.filter(team =>
+          team.status === filterOption
+        );
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTeams.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
       })
       .addCase(fetchTeams.fulfilled, (state, action: PayloadAction<Team[]>) => {
-        state.status = 'succeeded';
+        state.loading = false;
         state.teams = action.payload;
       })
       .addCase(fetchTeams.rejected, (state, action) => {
-        state.status = 'failed';
+        state.loading = false;
         state.error = action.error.message || 'Failed to fetch teams';
       })
       .addCase(createTeam.fulfilled, (state, action: PayloadAction<Team>) => {
@@ -102,14 +120,14 @@ const teamSlice = createSlice({
         state.teams = state.teams.filter(team => team._id !== action.payload);
       })
       .addCase(fetchTeamDetails.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
       })
       .addCase(fetchTeamDetails.fulfilled, (state, action: PayloadAction<Team>) => {
-        state.status = 'succeeded';
+        state.loading = false;
         state.currentTeam = action.payload;
       })
       .addCase(fetchTeamDetails.rejected, (state, action) => {
-        state.status = 'failed';
+        state.loading = false;
         state.error = action.payload as string;
       })
       .addCase(addPlayerAsync.fulfilled, (state, action) => {
@@ -135,5 +153,7 @@ const teamSlice = createSlice({
       });
   },
 });
+
+export const { searchTeams, filterTeams } = teamSlice.actions;
 
 export const teamReducer = teamSlice.reducer;

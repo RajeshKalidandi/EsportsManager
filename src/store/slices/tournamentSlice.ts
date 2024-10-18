@@ -1,16 +1,19 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { Tournament, Match } from '../../types/tournament';
+import { AppThunk } from '..';
 
 interface TournamentState {
   tournaments: Tournament[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  filteredTournaments: Tournament[];
+  loading: boolean;
   error: string | null;
 }
 
 const initialState: TournamentState = {
   tournaments: [],
-  status: 'idle',
+  filteredTournaments: [],
+  loading: false,
   error: null,
 };
 
@@ -39,7 +42,7 @@ export const updateMatchResult = createAsyncThunk(
 );
 
 const tournamentSlice = createSlice({
-  name: 'tournament',
+  name: 'tournaments',
   initialState,
   reducers: {
     setTournaments: (state, action: PayloadAction<Tournament[]>) => {
@@ -66,18 +69,34 @@ const tournamentSlice = createSlice({
         }
       }
     },
+    searchTournaments: (state, action: PayloadAction<string>) => {
+      const searchTerm = action.payload.toLowerCase();
+      state.filteredTournaments = state.tournaments.filter(tournament =>
+        tournament.name.toLowerCase().includes(searchTerm)
+      );
+    },
+    filterTournaments: (state, action: PayloadAction<string>) => {
+      const filterOption = action.payload;
+      if (filterOption === 'All') {
+        state.filteredTournaments = state.tournaments;
+      } else {
+        state.filteredTournaments = state.tournaments.filter(tournament =>
+          tournament.status === filterOption
+        );
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTournaments.pending, (state) => {
-        state.status = 'loading';
+        state.loading = true;
       })
       .addCase(fetchTournaments.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.loading = false;
         state.tournaments = action.payload;
       })
       .addCase(fetchTournaments.rejected, (state, action) => {
-        state.status = 'failed';
+        state.loading = false;
         state.error = action.error.message || null;
       })
       .addCase(createTournament.fulfilled, (state, action) => {
@@ -92,6 +111,6 @@ const tournamentSlice = createSlice({
   },
 });
 
-export const { setTournaments, addTournament, updateTournament, deleteTournament, updateMatch } = tournamentSlice.actions;
+export const { setTournaments, addTournament, updateTournament, deleteTournament, updateMatch, searchTournaments, filterTournaments } = tournamentSlice.actions;
 
 export default tournamentSlice.reducer;

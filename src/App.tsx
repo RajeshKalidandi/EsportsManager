@@ -21,9 +21,12 @@ import ContactUs from './pages/ContactUs';
 import AboutUs from './pages/AboutUs';
 import { setupSocketListeners } from './services/socket';
 import PlayerStatistics from './components/player/PlayerStatistics';
+import GameTitleList from './components/game/GameTitleList';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const auth = useSelector((state: RootState) => state.auth);
+  const isAuthenticated = auth ? auth.isAuthenticated : false;
+
   return isAuthenticated ? (
     <>
       <Navbar />
@@ -60,6 +63,7 @@ const App: React.FC = () => {
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
         <Route path="/player-stats/:playerId/:tournamentId" element={<PrivateRoute><PlayerStatistics /></PrivateRoute>} />
+        <Route path="/game-titles" element={<PrivateRoute><GameTitleList /></PrivateRoute>} />
       </Routes>
     </Router>
   );

@@ -1,43 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface DropdownProps {
   options: string[];
-  onSelect: (option: string) => void;
-  placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder = 'Select an option' }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-
-  const handleSelect = (option: string) => {
-    setSelectedOption(option);
-    onSelect(option);
-    setIsOpen(false);
-  };
-
+export const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placeholder }) => {
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-2 bg-white border rounded-md shadow-sm"
-      >
-        {selectedOption || placeholder}
-      </button>
-      {isOpen && (
-        <ul className="absolute w-full mt-1 bg-white border rounded-md shadow-lg">
-          {options.map((option) => (
-            <li
-              key={option}
-              onClick={() => handleSelect(option)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              {option}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <select
+      className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="" disabled selected>
+        {placeholder}
+      </option>
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
   );
 };
 

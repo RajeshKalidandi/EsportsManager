@@ -1,55 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import { Plus, Loader } from 'lucide-react';
+import { RootState } from '../store';
+import { fetchTeams, searchTeams, filterTeams } from '../store/slices/teamSlice';
 import TeamList from '../components/team/TeamList';
 import TeamForm from '../components/team/TeamForm';
 import Button from '../components/common/Button';
-import { motion } from 'framer-motion';
-import { RootState } from '../store';
+import Modal from '../components/common/Modal';
+import SearchAndFilter from '../components/common/SearchAndFilter';
+import Pagination from '../components/common/Pagination';
 
-const TeamManagement = () => {
-  const [showForm, setShowForm] = useState(false);
-  const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+const TeamManagement: React.FC = () => {
+  const dispatch = useDispatch();
+  const { teams, filteredTeams, loading, error } = useSelector((state: RootState) => state.teams);
+  const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const teamsPerPage = 9;
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+    dispatch(fetchTeams());
+  }, [dispatch]);
 
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
-  }
+  const handleSearch = (searchTerm: string) => {
+    dispatch(searchTeams(searchTerm));
+  };
+
+  const handleFilter = (filterOption: string) => {
+    dispatch(filterTeams(filterOption));
+  };
+
+  const handleCreateTeam = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const indexOfLastTeam = currentPage * teamsPerPage;
+  const indexOfFirstTeam = indexOfLastTeam - teamsPerPage;
+  const currentTeams = (filteredTeams.length > 0 ? filteredTeams : teams).slice(indexOfFirstTeam, indexOfLastTeam);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <motion.div 
-      className="container mx-auto px-4 py-8"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1 className="text-4xl font-bold mb-8 text-center text-blue-800">Team Management</h1>
-      <div className="mb-8 flex justify-end">
-        <Button 
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
-        >
-          {showForm ? 'Hide Form' : 'Create Team'}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Team Management</h1>
+      <div className="flex justify-between items-center mb-6">
+        <SearchAndFilter
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          filterOptions={['All', 'Active', 'Inactive']}
+        />
+        <Button onClick={handleCreateTeam} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Plus size={20} className="mr-2" />
+          Create Team
         </Button>
       </div>
-      {showForm && (
-        <motion.div 
-          className="mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <TeamForm onSubmit={() => setShowForm(false)} />
-        </motion.div>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader className="animate-spin" size={48} />
+        </div>
+      ) : error ? (
+        <div className="text-red-500 text-center">{error}</div>
+      ) : (
+        <>
+          <TeamList teams={currentTeams} />
+          <Pagination
+            itemsPerPage={teamsPerPage}
+            totalItems={filteredTeams.length > 0 ? filteredTeams.length : teams.length}
+            paginate={paginate}
+            currentPage={currentPage}
+          />
+        </>
       )}
-      <TeamList />
-    </motion.div>
+      <Modal isOpen={showModal} onClose={closeModal} title="Create Team">
+        <TeamForm onSubmit={closeModal} />
+      </Modal>
+    </div>
   );
 };
 

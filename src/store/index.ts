@@ -3,19 +3,21 @@ import { teamReducer } from './slices/teamSlice';
 import { authReducer } from './slices/authSlice';
 import tournamentReducer from './slices/tournamentSlice';
 import playerReducer from './slices/playerSlice';
+import gameTitleReducer from './slices/gameTitleSlice';
 import { Team } from '../types/team'; // Import the Team type
 
 export const store = configureStore({
   reducer: {
-    team: teamReducer,
+    teams: teamReducer,
     auth: authReducer,
-    tournament: tournamentReducer,
+    tournaments: tournamentReducer,
     player: playerReducer,
+    gameTitles: gameTitleReducer,
   },
 });
 
 export interface RootState {
-  team: {
+  teams: {
     teams: Team[] | null;
     loading: boolean;
     error: string | null;
@@ -26,8 +28,11 @@ export interface RootState {
     error: string | null;
     isAuthenticated: boolean;
   };
-  tournament: ReturnType<typeof tournamentReducer>;
+  tournaments: ReturnType<typeof tournamentReducer>;
   player: ReturnType<typeof playerReducer>;
+  gameTitles: ReturnType<typeof gameTitleReducer>;
 }
 
 export type AppDispatch = typeof store.dispatch;
+
+export default store;

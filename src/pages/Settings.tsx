@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Bell, Globe, Shield, Moon } from 'lucide-react';
 import Card from '../components/common/Card';

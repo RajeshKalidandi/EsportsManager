@@ -2,24 +2,16 @@ import React from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
 }
 
-const Input: React.FC<InputProps> = ({ label, error, className = '', ...props }) => {
+export const Input: React.FC<InputProps> = ({ label, className, ...props }) => {
   return (
-    <div className="mb-4">
-      {label && (
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={props.id}>
-          {label}
-        </label>
-      )}
+    <div className="flex flex-col">
+      {label && <label className="mb-1 text-sm font-medium text-gray-700">{label}</label>}
       <input
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          error ? 'border-red-500' : ''
-        } ${className}`}
+        className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
         {...props}
       />
-      {error && <p className="text-red-500 text-xs italic mt-1">{error}</p>}
     </div>
   );
 };
