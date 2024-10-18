@@ -3,21 +3,39 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { Trophy, Users, BarChart2, Zap, ChevronRight, Star, Shield, Globe } from 'lucide-react';
+import SEO from '../components/SEO';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import StructuredData from '../components/StructuredData';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
-      <Header />
-      <HeroSection />
-      <BenefitsSection />
-      <USPSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <FreeTierSection />
-      <FAQSection />
-      <CTASection />
-      <Footer />
-    </div>
+    <>
+      <StructuredData
+        type="Organization"
+        name="EsportsManager"
+        description="All-in-one esports team management platform"
+        url="https://esports-manager-mu.vercel.app"
+        logo="https://esports-manager-mu.vercel.app/logo.png"
+      />
+      <SEO 
+        title="Esports Management Platform"
+        description="Elevate your esports team with our all-in-one management platform. Manage, analyze, and dominate in tournaments."
+        keywords="esports, management, tournaments, teams, analytics"
+      />
+      <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
+        <Header />
+        <HeroSection />
+        <BenefitsSection />
+        <USPSection />
+        <TestimonialsSection />
+        <PricingSection />
+        <FreeTierSection />
+        <FAQSection />
+        <CTASection />
+        <Footer />
+      </div>
+    </>
   );
 };
 
@@ -42,13 +60,11 @@ const Header: React.FC = () => (
 
 const HeroSection: React.FC = () => (
   <section className="text-center py-20 relative overflow-hidden">
-    <motion.img
+    <LazyLoadImage
       src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80"
       alt="Esports Arena"
+      effect="blur"
       className="absolute inset-0 w-full h-full object-cover opacity-20"
-      initial={{ scale: 1.1 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
     />
     <div className="relative z-10">
       <motion.h2 

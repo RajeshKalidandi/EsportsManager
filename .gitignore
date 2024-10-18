@@ -33,3 +33,4 @@ server/.env
 
 # .gitignore
 server/config/firebase-service-account.json
+.vercel
